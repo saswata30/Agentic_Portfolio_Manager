@@ -12,14 +12,14 @@ A Portfolio Manager at Northbridge Capital (a subsidiary of Fairfox Financial Ho
 
 
 ## What We Monitor
-•	Market feature vectors from FactSet by ticker/date: momentum, earnings quality, valuation, volatility, and news sentiment.
-•	Internal positions and exposures (delta, beta, sector weights), orders/executions (fills, slippage, spread, liquidity), and research signals.
-•	Risk policy changes and limit breaches (e.g., VAR, concentration, option Greeks).
-•	KPIs: daily PnL (%), vector shifts vs baseline, limit breach count, turnover (%), average slippage (bps), realized volatility vs vector volatility, spread cost, and concentration by sector.
+1. Market feature vectors from FactSet by ticker/date: momentum, earnings quality, valuation, volatility, and news sentiment.
+2 . Internal positions and exposures (delta, beta, sector weights), orders/executions (fills, slippage, spread, liquidity), and research signals.
+3. Risk policy changes and limit breaches (e.g., VAR, concentration, option Greeks).
+4. KPIs: daily PnL (%), vector shifts vs baseline, limit breach count, turnover (%), average slippage (bps), realized volatility vs vector volatility, spread cost, and concentration by sector.
 ## Baseline Behavior (Jan–May 2025)
-•	Momentum and earnings quality vectors moderately correlated (r ~0.55) for NVDA and peer basket; volatility vector median ~1.2x of 3-year rolling baseline on event days but ~1.0x otherwise.
-•	Internal turnover averages ~12% monthly; slippage ~9–12 bps; limit breaches rare (<2 per month) and mostly concentration flags.
-•	Research sentiment is positive with occasional neutral periods around earnings.
+1. Momentum and earnings quality vectors moderately correlated (r ~0.55) for NVDA and peer basket; volatility vector median ~1.2x of 3-year rolling baseline on event days but ~1.0x otherwise.
+2. Internal turnover averages ~12% monthly; slippage ~9–12 bps; limit breaches rare (<2 per month) and mostly concentration flags.
+3. Research sentiment is positive with occasional neutral periods around earnings.
 ## Event to Capture (Regime Shift and Policy Tightening)
 •	Trigger window: 2025-06-15..2025-06-22.
 •	Observed FactSet anomaly: volatility vector rises to ~1.9x baseline starting 2025-06-18; momentum remains high while earnings quality vector dips ~22% vs its 90-day mean; sentiment becomes mixed.
@@ -32,24 +32,24 @@ A Portfolio Manager at Northbridge Capital (a subsidiary of Fairfox Financial Ho
 3.	Root cause aligned to change log: Internal risk_policy_changes table records a 2025-06-18 update tightening VAR/gamma limits for Growth-US, with explicit policy IDs, scopes, and notes. Correlation between breach count and the change date is strong; post-change, the number of marketable orders increases.
 4.	Business impact quantified: Sleeve PnL dips -2.3% in late June; realized volatility vs vector volatility widens; liquidity costs rise. The agent can trace which tickers (NVDA, AMD) contributed most and surface Q&A such as whether the policy change prevented larger drawdowns.
 ## Q&A App Requirements
-•	Natural-language interface over unified datasets (external vectors and internal records) with guardrails: answer derivations must reference dated facts, show calculations (e.g., baseline vs event ratios), and cite source tables/fields. KA source configuration includes the Investor_Report collection and the interim report.pdf path for governance and policy context.
-•	Capabilities: ticker-level and sleeve-level questions; time-window filters; factor attribution; breach explanations; execution cost breakdown; policy timeline alignment; scenario backtests (e.g., no-policy-change).
-•	Constraints: responses must include date ranges, magnitudes, and affected segments; expose uncertainty where applicable (e.g., backtest assumptions).
+1. Natural-language interface over unified datasets (external vectors and internal records) with guardrails: answer derivations must reference dated facts, show calculations (e.g., baseline vs event ratios), and cite source tables/fields. KA source configuration includes the Investor_Report collection and the interim report.pdf path for governance and policy context.
+2. Capabilities: ticker-level and sleeve-level questions; time-window filters; factor attribution; breach explanations; execution cost breakdown; policy timeline alignment; scenario backtests (e.g., no-policy-change).
+3. Constraints: responses must include date ranges, magnitudes, and affected segments; expose uncertainty where applicable (e.g., backtest assumptions).
 ## Genie Configuration
-•	Supported intents: trend_analysis, root_cause_alignment, execution_cost_attribution, exposure_change, policy_impact, scenario_backtest, sentiment_momentum_divergence.
-•	Response schema: include fields [time_window, entities (ticker, sleeve), metrics, calculations (baseline_vs_event), citations (table.column), confidence].
-•	Guardrails: strict date-window adherence; cite policy_id for any policy-driven answer; explain assumptions for backtests.
+1. Supported intents: trend_analysis, root_cause_alignment, execution_cost_attribution, exposure_change, policy_impact, scenario_backtest, sentiment_momentum_divergence.
+2. Response schema: include fields [time_window, entities (ticker, sleeve), metrics, calculations (baseline_vs_event), citations (table.column), confidence].
+3. Guardrails: strict date-window adherence; cite policy_id for any policy-driven answer; explain assumptions for backtests.
 ## What We Monitor (KPIs)
-•	Vector Shift Ratio (per factor): current_value / 90-day baseline.
-•	Breach Count per day and per policy type.
-•	Turnover (% of portfolio traded) and Orders Urgency (% marketable).
-•	Slippage (bps) and Effective Spread (bps).
-•	PnL (%) daily and cumulative; Realized Vol vs Vector Vol.
-•	Concentration metrics (top positions share, sector weights).
+1. Vector Shift Ratio (per factor): current_value / 90-day baseline.
+2. Breach Count per day and per policy type.
+3. Turnover (% of portfolio traded) and Orders Urgency (% marketable).
+4. Slippage (bps) and Effective Spread (bps).
+5. PnL (%) daily and cumulative; Realized Vol vs Vector Vol.
+6. Concentration metrics (top positions share, sector weights).
 ## Measurements and Windows
-•	Period: 2025-04-01..2025-10-21 (3-year vectors cover 2022-10-01..2025-10-21 per ticker; we focus on recent 6 months for impact charts).
-•	Event window: 2025-06-15..2025-06-22; recovery: through July.
-•	Segments: sleeve={Growth-US, Core-EMEA, Tech-APAC}, sector={Semis, Software, Hardware}, order_type={marketable, limit}, venue={NASDAQ, NYSE, ARCA}.
+1. Period: 2025-04-01..2025-10-21 (3-year vectors cover 2022-10-01..2025-10-21 per ticker; we focus on recent 6 months for impact charts).
+2. Event window: 2025-06-15..2025-06-22; recovery: through July.
+3. Segments: sleeve={Growth-US, Core-EMEA, Tech-APAC}, sector={Semis, Software, Hardware}, order_type={marketable, limit}, venue={NASDAQ, NYSE, ARCA}.
 
 
 ## Deployment

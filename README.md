@@ -11,6 +11,47 @@ A Portfolio Manager at Northbridge Capital (a subsidiary of Fairfox Financial Ho
 ![alt text](https://github.com/saswata30/Agentic_Portfolio_Manager/blob/main/Images/Multi%20Agent%201.png?raw=true)
 
 
+## What We Monitor
+•	Market feature vectors from FactSet by ticker/date: momentum, earnings quality, valuation, volatility, and news sentiment.
+•	Internal positions and exposures (delta, beta, sector weights), orders/executions (fills, slippage, spread, liquidity), and research signals.
+•	Risk policy changes and limit breaches (e.g., VAR, concentration, option Greeks).
+•	KPIs: daily PnL (%), vector shifts vs baseline, limit breach count, turnover (%), average slippage (bps), realized volatility vs vector volatility, spread cost, and concentration by sector.
+## Baseline Behavior (Jan–May 2025)
+•	Momentum and earnings quality vectors moderately correlated (r ~0.55) for NVDA and peer basket; volatility vector median ~1.2x of 3-year rolling baseline on event days but ~1.0x otherwise.
+•	Internal turnover averages ~12% monthly; slippage ~9–12 bps; limit breaches rare (<2 per month) and mostly concentration flags.
+•	Research sentiment is positive with occasional neutral periods around earnings.
+## Event to Capture (Regime Shift and Policy Tightening)
+•	Trigger window: 2025-06-15..2025-06-22.
+•	Observed FactSet anomaly: volatility vector rises to ~1.9x baseline starting 2025-06-18; momentum remains high while earnings quality vector dips ~22% vs its 90-day mean; sentiment becomes mixed.
+•	Internal signals: Growth-US sleeve records 11 risk limit breaches (VAR and gamma) vs typical 0–2; turnover spikes +35% in late June; average slippage increases to ~18 bps due to higher spreads and urgency.
+•	Root cause: 2025-06-18 internal risk policy update tightened VAR bands and gamma thresholds following a 3-standard-deviation move in options-implied volatility. This dated change aligns temporally with breach count and order urgency.
+•	Business consequence: short-term drawdown of -2.3% in the Growth-US sleeve (NVDA/semis exposure), followed by controlled risk reduction; opportunity cost estimated at -$4.2M vs staying fully invested, but improved tail-risk protection.
+## Narrative Business Story
+1.	Anomaly observed in external market vectors: NVDA volatility vector jumps to ~1.9x baseline on 2025-06-18, while earnings quality vector declines ~22%. Momentum remains elevated, creating a decoupling in signal mix that typically precedes wider spreads and execution difficulty.
+2.	Supporting internal metrics: Orders and executions show urgency (marketable orders), wider quoted spreads, realized slippage +18 bps, and turnover +35%. Positions data show concentration reduction in semis; breach logs show VAR/gamma breaches clustering on 2025-06-18..2025-06-20.
+3.	Root cause aligned to change log: Internal risk_policy_changes table records a 2025-06-18 update tightening VAR/gamma limits for Growth-US, with explicit policy IDs, scopes, and notes. Correlation between breach count and the change date is strong; post-change, the number of marketable orders increases.
+4.	Business impact quantified: Sleeve PnL dips -2.3% in late June; realized volatility vs vector volatility widens; liquidity costs rise. The agent can trace which tickers (NVDA, AMD) contributed most and surface Q&A such as whether the policy change prevented larger drawdowns.
+## Q&A App Requirements
+•	Natural-language interface over unified datasets (external vectors and internal records) with guardrails: answer derivations must reference dated facts, show calculations (e.g., baseline vs event ratios), and cite source tables/fields. KA source configuration includes the Investor_Report collection and the interim report.pdf path for governance and policy context.
+•	Capabilities: ticker-level and sleeve-level questions; time-window filters; factor attribution; breach explanations; execution cost breakdown; policy timeline alignment; scenario backtests (e.g., no-policy-change).
+•	Constraints: responses must include date ranges, magnitudes, and affected segments; expose uncertainty where applicable (e.g., backtest assumptions).
+## Genie Configuration
+•	Supported intents: trend_analysis, root_cause_alignment, execution_cost_attribution, exposure_change, policy_impact, scenario_backtest, sentiment_momentum_divergence.
+•	Response schema: include fields [time_window, entities (ticker, sleeve), metrics, calculations (baseline_vs_event), citations (table.column), confidence].
+•	Guardrails: strict date-window adherence; cite policy_id for any policy-driven answer; explain assumptions for backtests.
+## What We Monitor (KPIs)
+•	Vector Shift Ratio (per factor): current_value / 90-day baseline.
+•	Breach Count per day and per policy type.
+•	Turnover (% of portfolio traded) and Orders Urgency (% marketable).
+•	Slippage (bps) and Effective Spread (bps).
+•	PnL (%) daily and cumulative; Realized Vol vs Vector Vol.
+•	Concentration metrics (top positions share, sector weights).
+## Measurements and Windows
+•	Period: 2025-04-01..2025-10-21 (3-year vectors cover 2022-10-01..2025-10-21 per ticker; we focus on recent 6 months for impact charts).
+•	Event window: 2025-06-15..2025-06-22; recovery: through July.
+•	Segments: sleeve={Growth-US, Core-EMEA, Tech-APAC}, sector={Semis, Software, Hardware}, order_type={marketable, limit}, venue={NASDAQ, NYSE, ARCA}.
+
+
 ## Deployment
 
 This bundle can be deployed to any Databricks workspace using Databricks Asset Bundles (DAB):

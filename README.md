@@ -5,7 +5,10 @@ A Portfolio Manager at Northbridge Capital (a subsidiary of Fairfox Financial Ho
 
 
 ![alt text](https://github.com/saswata30/Agentic_Portfolio_Manager/blob/main/Images/Flow.png?raw=true)
-
+![alt text](https://github.com/saswata30/Agentic_Portfolio_Manager/blob/main/Images/Dashboard.png?raw=true)
+![alt text](https://github.com/saswata30/Agentic_Portfolio_Manager/blob/main/Images/Genie.png?raw=true)
+![alt text](https://github.com/saswata30/Agentic_Portfolio_Manager/blob/main/Images/Multi%20Agent%201.png?raw=true)
+![alt text](https://github.com/saswata30/Agentic_Portfolio_Manager/blob/main/Images/Multi%20Agent%201.png?raw=true)
 
 
 ## Deployment

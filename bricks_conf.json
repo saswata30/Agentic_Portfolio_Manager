@@ -1,0 +1,347 @@
+{
+  "genie_space": {
+    "config": {
+      "id": "01f0af941e6314e1bc2ed7e66496e9ff",
+      "space_id": "01f0af941e6314e1bc2ed7e66496e9ff",
+      "display_name": "AgneticPortFolioManager - Genie AI-BI",
+      "description": "Genie space for AgneticPortFolioManager demo with curated questions and SQL instructions",
+      "warehouse_id": "862f1d757f0424f7",
+      "created_timestamp": 1761171114830,
+      "last_updated_timestamp": 1762102083025,
+      "table_identifiers": [
+        "sas_demo.saswata_sengupta_agneticportfoliomanager.gold_agent_qa_bridge",
+        "sas_demo.saswata_sengupta_agneticportfoliomanager.gold_vector_timeseries",
+        "sas_demo.saswata_sengupta_agneticportfoliomanager.gold_execution_costs_daily",
+        "sas_demo.saswata_sengupta_agneticportfoliomanager.gold_execution_costs_vs_spreads_timeseries",
+        "sas_demo.saswata_sengupta_agneticportfoliomanager.gold_breach_contributors",
+        "sas_demo.saswata_sengupta_agneticportfoliomanager.gold_policy_change_log_table",
+        "sas_demo.saswata_sengupta_agneticportfoliomanager.gold_risk_breach_alignment",
+        "sas_demo.saswata_sengupta_agneticportfoliomanager.gold_pnl_timeseries",
+        "sas_demo.saswata_sengupta_agneticportfoliomanager.gold_portfolio_exposure",
+        "sas_demo.saswata_sengupta_agneticportfoliomanager.gold_weekly_breach_counts_by_type",
+        "sas_demo.saswata_sengupta_agneticportfoliomanager.gold_kpi_event_window_stats",
+        "sas_demo.saswata_sengupta_agneticportfoliomanager.gold_kpi_latest_pnl_drawdown",
+        "sas_demo.saswata_sengupta_agneticportfoliomanager.gold_trailing_30d_execution_costs",
+        "sas_demo.saswata_sengupta_agneticportfoliomanager.silver_factset_vectors",
+        "sas_demo.saswata_sengupta_agneticportfoliomanager.silver_positions",
+        "sas_demo.saswata_sengupta_agneticportfoliomanager.silver_orders_execs",
+        "sas_demo.saswata_sengupta_agneticportfoliomanager.silver_risk_breaches",
+        "sas_demo.saswata_sengupta_agneticportfoliomanager.silver_risk_policy_changes"
+      ],
+      "user_id": 7673243576893660,
+      "run_as_type": "VIEWER",
+      "folder_node_internal_name": "tree/2894186667330801"
+    },
+    "sample_questions": [],
+    "benchmarks": [],
+    "instructions": [
+      {
+        "title": "Notes",
+        "content": "This Genie space supports analysis of Northbridge Capital\u2019s Growth-US sleeve regime shift and policy tightening around mid-June 2025. Use gold tables for fast KPI answers and silver tables for microstructure and root-cause drilldowns.\n\nKey concepts and business logic:\n- Vector Shift Ratio per factor = current_value / 90-day baseline; use gold_vector_timeseries.vector_shift_ratio_* fields to identify anomalies (e.g., NVDA volatility ratio peaking on 2025-06-18).\n- Event window is 2025-06-15..2025-06-22; recovery spans late June through July.\n- Execution costs: turnover_pct, avg_slippage_bps, avg_quote_spread_bps, marketable_order_share, and avg_top_of_book_depth_shares are daily aggregates in gold_execution_costs_daily.\n- Breach alignment: gold_risk_breach_alignment provides total_breach_count, avg_severity, aligned_change_magnitude, and min_time_delta_days to quantify temporal alignment to policy changes; focus on VAR and gamma for Growth-US.\n- PnL: gold_pnl_timeseries contains pnl_pct and cumulative_pnl_pct; late June shows a -2.3% drawdown for Growth-US aligned to de-risking and higher liquidity costs.\n- Exposure and concentration: gold_portfolio_exposure tracks sector weights and avg_concentration_pct; semiconductors dominate Growth-US baseline and are trimmed during event.\n- Unified Q&A bridge: gold_agent_qa_bridge exposes per-day/ticker/sleeve fields across vectors, breaches, policy changes, turnover, slippage, concentration_pct, and pnl_pct for one-stop queries.\n\nData quality and usage notes:\n- Weekend days are absent; use gold_date_spine for continuous time-series scaffolding if needed.\n- Policy alignment fields may be sparse outside change dates; interpret alignment_rate cautiously.\n- Vector volatility exhibits heavy tails; prefer medians or thresholds (e.g., ratio >1.5) for persistence measures.\n- Market microstructure fields are venue-specific (NASDAQ for semis in this demo).\n\nRecommended table usage:\n- Prefer gold tables (vector_timeseries, execution_costs_daily, breach_alignment, pnl_timeseries, agent_qa_bridge, breach_contributors, portfolio_exposure) for curated metrics.\n- Use silver tables (factset_vectors, positions, orders_execs, risk_breaches, risk_policy_changes) when detailed drilldowns or alternative calculations are required.",
+        "instruction_type": "TEXT_INSTRUCTION"
+      },
+      {
+        "title": "NVDA Volatility Vector Shift vs 90-day Baseline",
+        "content": "-- Identify NVDA volatility shift timing, magnitude, and persistence\nSELECT date,\n       ticker,\n       vector_shift_ratio_volatility AS vol_ratio,\n       CASE WHEN date BETWEEN DATE('2025-06-15') AND DATE('2025-06-22') THEN TRUE ELSE FALSE END AS event_window\nFROM sas_demo.saswata_sengupta_agneticportfoliomanager.gold_vector_timeseries\nWHERE ticker = 'NVDA'\nORDER BY date;\n-- Key fields: vector_shift_ratio_volatility, baseline_90d_volatility (available if needed)\n-- Persistence can be measured by counting days vol_ratio > 1.5 after 2025-06-18.",
+        "instruction_type": "SQL_INSTRUCTION"
+      },
+      {
+        "title": "Event-Window Breach and Turnover Contributors (Growth-US)",
+        "content": "-- Ticker/sector contributors during 2025-06-15..2025-06-22\nSELECT date, sleeve, sector, ticker,\n       turnover_pct,\n       breach_count\nFROM sas_demo.saswata_sengupta_agneticportfoliomanager.gold_breach_contributors\nWHERE sleeve = 'Growth-US'\n  AND date BETWEEN DATE('2025-06-15') AND DATE('2025-06-22')\nORDER BY date, sector, ticker;",
+        "instruction_type": "SQL_INSTRUCTION"
+      },
+      {
+        "title": "Align Breach Clusters to Policy Changes",
+        "content": "-- Correlate breaches with policy changes proximity and magnitude\nSELECT a.date,\n       a.sleeve,\n       a.limit_type,\n       a.total_breach_count,\n       a.avg_severity,\n       a.aligned_change_magnitude,\n       a.min_time_delta_days,\n       a.alignment_rate\nFROM sas_demo.saswata_sengupta_agneticportfoliomanager.gold_risk_breach_alignment a\nWHERE a.sleeve = 'Growth-US'\n  AND a.date BETWEEN DATE('2025-06-15') AND DATE('2025-06-22')\nORDER BY a.date, a.limit_type;",
+        "instruction_type": "SQL_INSTRUCTION"
+      },
+      {
+        "title": "Execution Costs and Urgency by Day/Ticker",
+        "content": "-- Daily execution cost metrics with urgency share\nSELECT date, sleeve, ticker,\n       turnover_pct,\n       avg_slippage_bps,\n       avg_quote_spread_bps,\n       marketable_order_share,\n       avg_top_of_book_depth_shares\nFROM sas_demo.saswata_sengupta_agneticportfoliomanager.gold_execution_costs_daily\nWHERE sleeve = 'Growth-US'\n  AND date BETWEEN DATE('2025-06-01') AND DATE('2025-07-15')\nORDER BY date, ticker;",
+        "instruction_type": "SQL_INSTRUCTION"
+      },
+      {
+        "title": "Sleeve-level PnL Drawdown and Trend",
+        "content": "-- Growth-US PnL% and cumulative drawdown trend\nSELECT date,\n       sleeve,\n       pnl_pct,\n       cumulative_pnl_pct,\n       sleeve_momentum_proxy\nFROM sas_demo.saswata_sengupta_agneticportfoliomanager.gold_pnl_timeseries\nWHERE sleeve = 'Growth-US'\nORDER BY date;",
+        "instruction_type": "SQL_INSTRUCTION"
+      },
+      {
+        "title": "Notes",
+        "content": "Purpose\nThis Genie space helps portfolio managers analyze the June 2025 regime shift around NVDA and its impact on Northbridge Capital\u2019s Growth-US sleeve. It unifies external FactSet factor vectors with internal positions, orders/executions, breaches, policy changes, and sleeve PnL to support dated, source-cited Q&A.\n\nData model and key logic\n- Gold tables expose ready-to-use KPIs and aligned timelines:\n  - gold_vector_timeseries: daily factor vectors, 90-day baselines, and shift ratios with an event_window flag (2025-06-15..2025-06-22).\n  - gold_execution_costs_daily: daily turnover_pct, avg_slippage_bps, avg_quote_spread_bps, marketable_order_share, and depth by sleeve/ticker.\n  - gold_risk_breach_alignment: breach counts with alignment to risk_policy_changes (same or next trading day), plus change magnitudes and time deltas.\n  - gold_pnl_timeseries and gold_kpi_latest_pnl_drawdown: sleeve PnL% and cumulative PnL% for drawdown tracking (Growth-US dips ~-2.3% in late June).\n  - gold_breach_contributors: event-window turnover and breach contribution by ticker/sector within Growth-US.\n  - gold_agent_qa_bridge: denormalized daily view across vectors, policy change magnitude, breaches, turnover, slippage, spreads, concentration, and pnl_pct to answer composite questions quickly.\n- Silver tables allow detailed drill-downs:\n  - silver_factset_vectors for 3-year history of vectors (2022-10-01..2025-10-21) and raw baselines/ratios.\n  - silver_positions for exposures, concentration_pct, and sleeve market values.\n  - silver_orders_execs for atomic microstructure analytics with order_type, venue, spread, depth, slippage, and urgency_flag.\n  - silver_risk_breaches and silver_risk_policy_changes for raw logs and change notes (e.g., 2025-06-18 VAR/gamma tightening; includes change_magnitude and notes).\n\nBusiness calculations and conventions\n- Vector Shift Ratio = current_factor_value / trailing 90-day baseline for that factor and ticker.\n- Event window is 2025-06-15..2025-06-22; NVDA volatility ratio peaks near 1.81\u20131.90x baseline on 2025-06-18; quality dips ~22% vs 90-day mean; momentum elevated.\n- Turnover_pct is a sleeve-level proxy derived from shares_traded relative to position sizing; marketable_order_share approximates urgency.\n- Slippage_bps is execution shortfall vs arrival and is compared with avg_quote_spread_bps for cost attribution (spread cost vs impact).\n- Breach alignment uses same-day or next-trading-day proximity of policy change timestamps with matching sleeve and limit_type; alignment_rate and min_time_delta_days help quantify correlation.\n- PnL drawdown for Growth-US in late June is ~-2.3%, with subsequent recovery through July; opportunity cost scenario analysis requires explicit assumptions called out in the answer.\n\nData quality notes\n- Weekends are absent in daily vectors and trading datasets; use the gold_date_spine for continuous axes.\n- Small nulls may exist in policy alignment magnitudes outside change dates; treat missing aligned_change_magnitude as no change.\n- Execution venue in this demo is NASDAQ for all orders; expect spread/urgency variation by ticker and date rather than venue.\n- Use gold tables for fast executive answers; fall back to silver tables for detailed tracing and PDF governance references (Investor_Report collection including interim report.pdf).",
+        "instruction_type": "TEXT_INSTRUCTION"
+      },
+      {
+        "title": "NVDA volatility vector shift vs 90-day baseline",
+        "content": "-- Identify NVDA volatility vector spike and persistence\nSELECT date,\n       ticker,\n       vector_shift_ratio_volatility AS vol_ratio,\n       CASE WHEN event_window THEN 'event' ELSE 'non_event' END AS window\nFROM sas_demo.saswata_sengupta_agneticportfoliomanager.gold_vector_timeseries\nWHERE ticker = 'NVDA'\nORDER BY date;\n-- To summarize: look for max(vol_ratio) and count of days vol_ratio > 1.3 around 2025-06-18",
+        "instruction_type": "SQL_INSTRUCTION"
+      },
+      {
+        "title": "Event-window contributors: turnover and breaches by ticker/sector (Growth-US)",
+        "content": "-- Turnover and breaches by ticker/sector during 2025-06-15..2025-06-22\nSELECT b.date, b.sleeve, b.sector, b.ticker,\n       b.turnover_pct,\n       b.breach_count\nFROM sas_demo.saswata_sengupta_agneticportfoliomanager.gold_breach_contributors b\nWHERE b.date BETWEEN DATE('2025-06-15') AND DATE('2025-06-22')\n  AND b.sleeve = 'Growth-US'\nORDER BY b.date, b.breach_count DESC, b.turnover_pct DESC;",
+        "instruction_type": "SQL_INSTRUCTION"
+      },
+      {
+        "title": "Execution costs and urgency trends by sleeve/ticker",
+        "content": "-- Daily execution costs, spreads, and urgency for trend comparisons\nSELECT date, sleeve, ticker,\n       turnover_pct,\n       avg_slippage_bps,\n       avg_quote_spread_bps,\n       marketable_order_share\nFROM sas_demo.saswata_sengupta_agneticportfoliomanager.gold_execution_costs_daily\nWHERE date BETWEEN DATE('2025-06-01') AND DATE('2025-07-15')\nORDER BY date, sleeve, ticker;",
+        "instruction_type": "SQL_INSTRUCTION"
+      },
+      {
+        "title": "Policy change alignment with breaches",
+        "content": "-- Join policy changes with breach counts to check same/next-day alignment\nSELECT r.date,\n       r.sleeve,\n       r.limit_type,\n       r.total_breach_count,\n       r.avg_severity,\n       r.aligned_change_magnitude,\n       r.min_time_delta_days,\n       r.alignment_rate\nFROM sas_demo.saswata_sengupta_agneticportfoliomanager.gold_risk_breach_alignment r\nWHERE r.date BETWEEN DATE('2025-06-01') AND DATE('2025-07-01')\n  AND r.sleeve = 'Growth-US'\nORDER BY r.date, r.limit_type;",
+        "instruction_type": "SQL_INSTRUCTION"
+      },
+      {
+        "title": "Sleeve-level PnL drawdown and trajectory",
+        "content": "-- Track daily and cumulative PnL for sleeves to quantify drawdown and recovery\nSELECT date, sleeve, pnl_pct, cumulative_pnl_pct\nFROM sas_demo.saswata_sengupta_agneticportfoliomanager.gold_pnl_timeseries\nWHERE date BETWEEN DATE('2025-06-01') AND DATE('2025-07-31')\nORDER BY date, sleeve;",
+        "instruction_type": "SQL_INSTRUCTION"
+      },
+      {
+        "title": "Notes",
+        "content": "This Genie space analyzes Northbridge Capital\u2019s Growth-US sleeve (subsidiary of Fairfox Financial Holding) across external FactSet vectors and internal execution/risk data to detect and explain the June 2025 regime shift around NVDA.\n\nScope and story anchors\n- Period focus: 2025-04-01..2025-10-21; event window: 2025-06-15..2025-06-22; recovery through July.\n- External vectors: momentum, earnings quality, valuation, volatility, sentiment from FactSet with 90-day baselines and vector shift ratios.\n- Internal data: positions/exposures, orders/executions (turnover, slippage, spreads, depth, urgency), risk policy changes, and breach logs.\n- Investor_Report PDF collection (incl. interim report.pdf) provides governance/policy context; cite date-stamped sources where relevant.\n\nCore business logic and calculations\n- Vector Shift Ratio = current factor value / 90-day trailing baseline (per ticker). Key KPI: volatility ratio; NVDA peaks near 1.8\u20131.9x on 2025-06-18 and quality dips ~22%.\n- Turnover (%) is aggregated daily by sleeve/ticker in gold_execution_costs_daily; urgency measured by marketable_order_share.\n- Slippage (bps) and quote_spread_bps reflect execution costs; expect ~18 bps during event vs ~9\u201312 bps baseline.\n- Breach alignment uses gold_risk_breach_alignment, joining breaches to silver_risk_policy_changes by same/next-day and matching sleeve + limit_type; emits alignment_rate and min_time_delta_days.\n- PnL% at sleeve level is from gold_pnl_timeseries; late June shows a -2.3% drawdown for Growth-US; cumulative_pnl_pct tracks the path.\n- Concentration risk via gold_portfolio_exposure avg_concentration_pct and sector weights; semis are dominant in Growth-US.\n- Use gold_agent_qa_bridge for unified Q&A across date, ticker, sleeve to combine vector ratios, turnover, slippage, breach_count, policy_change_magnitude, and pnl_pct.\n\nHow to answer typical questions\n- Event detection: Query gold_vector_timeseries for NVDA vector_shift_ratio_volatility and identify max and persistence > 1.3x.\n- Contributors: Use gold_breach_contributors and gold_execution_costs_daily to rank tickers/sectors by turnover and breaches in 2025-06-15..06-22.\n- Policy alignment: Pull gold_policy_change_log_table for 2025-06-18 Growth-US VAR/gamma changes; quantify alignment via gold_risk_breach_alignment.\n- Cost/pnl attribution: Combine gold_pnl_timeseries with gold_execution_costs_vs_spreads_timeseries or gold_agent_qa_bridge to compare slippage and turnover around the drawdown.\n- Scenario note: No-policy-change scenarios are approximate; state assumptions and highlight uncertainty when asked.\n\nData quality considerations\n- Weekend/holiday gaps are expected; use gold_date_spine when building continuous charts.\n- Factor vectors are trading-day only and heavy-tailed for volatility; use medians or winsorization if needed.\n- Some alignment fields (aligned_change_magnitude) exist only near policy dates; nulls elsewhere are expected.\n\nPrefer gold tables for KPIs and cross-domain joins; use silver tables for drill-down (atomic orders, detailed positions).",
+        "instruction_type": "TEXT_INSTRUCTION"
+      },
+      {
+        "title": "Find NVDA volatility vector spike and persistence",
+        "content": "-- NVDA volatility vector shift vs 90d baseline with persistence window\nSELECT date, ticker, vector_shift_ratio_volatility\nFROM sas_demo.saswata_sengupta_agneticportfoliomanager.gold_vector_timeseries\nWHERE ticker = 'NVDA'\nORDER BY date;\n-- Spike date ~2025-06-18 expected around ~1.8-1.9x; persistence can be measured as days with ratio > 1.3x following the spike.",
+        "instruction_type": "SQL_INSTRUCTION"
+      },
+      {
+        "title": "Event-window contributors: turnover and breaches",
+        "content": "-- Contributors in Growth-US during 2025-06-15..2025-06-22\nSELECT date, sector, ticker,\n       turnover_pct,\n       breach_count\nFROM sas_demo.saswata_sengupta_agneticportfoliomanager.gold_breach_contributors\nWHERE sleeve = 'Growth-US' AND date BETWEEN DATE('2025-06-15') AND DATE('2025-06-22')\nORDER BY date, breach_count DESC, turnover_pct DESC;",
+        "instruction_type": "SQL_INSTRUCTION"
+      },
+      {
+        "title": "Alignment of policy changes with breach clusters",
+        "content": "-- Join daily breaches to policy changes and compute alignment metrics\nSELECT date, sleeve, limit_type, total_breach_count,\n       aligned_change_magnitude, min_time_delta_days, alignment_rate\nFROM sas_demo.saswata_sengupta_agneticportfoliomanager.gold_risk_breach_alignment\nWHERE sleeve = 'Growth-US' AND date BETWEEN DATE('2025-06-01') AND DATE('2025-06-30')\nORDER BY date, limit_type;",
+        "instruction_type": "SQL_INSTRUCTION"
+      },
+      {
+        "title": "Execution costs vs spreads time series",
+        "content": "-- Daily slippage vs quoted spreads by sleeve/ticker\nSELECT date, sleeve, ticker, avg_slippage_bps, avg_quote_spread_bps\nFROM sas_demo.saswata_sengupta_agneticportfoliomanager.gold_execution_costs_vs_spreads_timeseries\nWHERE sleeve = 'Growth-US' AND date BETWEEN DATE('2025-06-01') AND DATE('2025-07-31')\nORDER BY date, ticker;",
+        "instruction_type": "SQL_INSTRUCTION"
+      },
+      {
+        "title": "Sleeve-level PnL drawdown and attribution proxies",
+        "content": "-- Growth-US PnL drawdown timeline with turnover/slippage context via QA bridge\nSELECT q.date,\n       SUM(CASE WHEN q.sleeve = 'Growth-US' THEN q.pnl_pct END) AS pnl_pct_growth_us,\n       AVG(CASE WHEN q.sleeve = 'Growth-US' THEN q.turnover_pct END) AS avg_turnover_pct,\n       AVG(CASE WHEN q.sleeve = 'Growth-US' THEN q.slippage_bps END) AS avg_slippage_bps\nFROM sas_demo.saswata_sengupta_agneticportfoliomanager.gold_agent_qa_bridge q\nWHERE q.date BETWEEN DATE('2025-06-01') AND DATE('2025-07-15')\nGROUP BY q.date\nORDER BY q.date;",
+        "instruction_type": "SQL_INSTRUCTION"
+      }
+    ]
+  },
+  "knowledge_assistant": {
+    "config": {
+      "knowledge_assistant": {
+        "tile": {
+          "tile_id": "031f41ef-6d4a-4183-8f1e-81d50a9815ec",
+          "name": "DBGEN_Northbridge_Portfolio_Risk_QA",
+          "tile_type": "KA",
+          "mlflow_experiment_id": "905161963726685",
+          "creation_timestamp_ms": 1762101286514,
+          "last_updated_timestamp_ms": 1762101304520,
+          "serving_endpoint_name": "ka-031f41ef-endpoint",
+          "creator": "saswata.sengupta@databricks.com",
+          "creator_display_name": "Saswata Sengupta",
+          "description": "AI assistant for Northbridge Capital\u2019s portfolio risk and execution Q&A, indexing the Investor_Report collection to answer governance, policy, breach, and performance impact questions for the AgneticPortFolioManager demo.",
+          "instructions": "You are a professional portfolio risk and execution assistant for Northbridge Capital (Fairfox parent). Answer questions using dated facts from the indexed Investor_Report PDFs and cite relevant identifiers (policy IDs, breach codes, execution metrics like slippage_bps, quote_spread_bps). Include time windows, magnitudes, and affected sleeves/tickers. When explaining events (e.g., 2025-06-18 VAR/gamma policy update), align to observed KPIs (PnL %, turnover %, breach counts) and note assumptions. Keep responses concise, quantitative, and transparent about uncertainty. Tone: clear, objective, and audit-friendly.",
+          "evaluation_run_exists": false,
+          "acl_enabled": true
+        },
+        "knowledge_sources": [
+          {
+            "files_source": {
+              "name": "Investor_Report",
+              "description": "",
+              "files": {
+                "path": "/Volumes/sas_demo/saswata_sengupta_agneticportfoliomanager/raw_data/pdf/Investor_Report"
+              }
+            },
+            "state": "KNOWLEDGE_SOURCE_STATE_UPDATED",
+            "last_successful_update_timestamp_ms": 1762101286514,
+            "latest_update_timestamp_ms": 1762101286514,
+            "knowledge_source_id": "76e5acc0-7191-430e-ab03-9642d255c433",
+            "indexed_row_count": 74,
+            "file_source_index_info": {
+              "summary": {
+                "total_files": 10,
+                "success_files": 10,
+                "skipped_files": 0,
+                "failed_files": 0,
+                "parsed_files": 10
+              },
+              "error": "",
+              "files_by_type": {
+                "pdf": 10
+              }
+            }
+          }
+        ],
+        "status": {
+          "endpoint_status": "ONLINE"
+        }
+      }
+    },
+    "knowledge_sources": [
+      {
+        "files_source": {
+          "name": "Investor_Report",
+          "description": "",
+          "files": {
+            "path": "/Volumes/sas_demo/saswata_sengupta_agneticportfoliomanager/raw_data/pdf/Investor_Report"
+          },
+          "type": "files"
+        }
+      }
+    ],
+    "examples": [
+      {
+        "question": "Which risk limits experienced the highest number of breaches during June 2025 and on what dates?",
+        "guidelines": [
+          "The answer should identify breach types that occurred most frequently, specify dates, and connect these to the policy change timeline if applicable."
+        ]
+      },
+      {
+        "question": "What trends are observed in portfolio turnover and breach frequency from April to October 2025?",
+        "guidelines": [
+          "The response should outline the historical trend, indicating whether June's activity was an anomaly or part of a trend, based on the documented data."
+        ]
+      },
+      {
+        "question": "What specific changes were made to the VAR and gamma limits during the June 2025 policy update?",
+        "guidelines": [
+          "The response should cite the exact policy ID, the nature of the limits tightened, and the dates or conditions under which these changes occurred."
+        ]
+      },
+      {
+        "question": "How might the portfolio's drawdown and breach events differ in a no-policy-change scenario for June 2025?",
+        "guidelines": [
+          "The evaluation should compare projected metrics with actual data, considering the absence of the policy change."
+        ]
+      },
+      {
+        "question": "How should one interpret a volatility vector rising to 1.9x baseline during the event window?",
+        "guidelines": [
+          "The answer should clarify the meaning of vector ratios, their implications for risk assessment, and how anomalies are identified from these vector metrics."
+        ]
+      },
+      {
+        "question": "What was the impact of increased order urgency on market spreads and slippage during June 2025?",
+        "guidelines": [
+          "The answer should analyze correlation between order urgency and spread/bps increases, referencing relevant order and execution data."
+        ]
+      },
+      {
+        "question": "How did sector weights in semiconductors change during June 2025 in response to risk signals?",
+        "guidelines": [
+          "The response should detail sector weight adjustments, highlighting specific portfolio positions impacted by risk management."
+        ]
+      },
+      {
+        "question": "How did the NVDA volatility vector anomaly influence the portfolio's risk metrics during June 2025?",
+        "guidelines": [
+          "The response should connect external vector anomalies to internal risk metrics, and discuss the implications for risk management."
+        ]
+      },
+      {
+        "question": "What is the overall impact of the June 2025 risk policy update on Northbridge Capital's portfolio performance?",
+        "guidelines": [
+          "Assess whether the document details the correlation between the policy change and portfolio metrics such as drawdowns, breach counts, and PnL, and ensures the analysis is supported by specified internal and external data."
+        ]
+      },
+      {
+        "question": "Did the policy tightening lead to more marketable orders and higher slippage in June 2025?",
+        "guidelines": [
+          "The answer should compare order types and slippage metrics before and after the policy change, supporting with relevant data."
+        ]
+      }
+    ]
+  },
+  "multi_agent_supervisor": {
+    "config": {
+      "multi_agent_supervisor": {
+        "tile": {
+          "tile_id": "bd255457-8c45-4f51-8705-d8d8b1c2759d",
+          "name": "DBGEN_Agnetic_Portfolio_Manager",
+          "tile_type": "MAS",
+          "mlflow_experiment_id": "905161963726688",
+          "creation_timestamp_ms": 1762101327283,
+          "last_updated_timestamp_ms": 1762101335503,
+          "serving_endpoint_name": "mas-bd255457-endpoint",
+          "creator": "saswata.sengupta@databricks.com",
+          "creator_display_name": "Saswata Sengupta",
+          "description": "Supervisor that coordinates Genie for data exploration and Knowledge Assistant for document Q&A to analyze factor vectors, internal trades, risk breaches, policy changes, and PnL for Northbridge Capital\u2019s Agnetic Portfolio Manager demo.",
+          "instructions": "Route quantitative data questions to Genie. Route policy, definitions, and governance/document questions to Knowledge Assistant. For complex questions referencing both data and policy (e.g., alignment of breach clusters to policy change details), query Genie first for metrics and timing, then retrieve the relevant policy excerpts and citations from Investor_Report via Knowledge Assistant. Always include dates, magnitudes, affected sleeves/sectors/tickers, and cite source tables or document names in synthesized answers. Maintain a concise, executive-friendly tone focused on actionable insights.",
+          "evaluation_run_exists": false,
+          "acl_enabled": true
+        },
+        "agents": [
+          {
+            "name": "Knowledge Assistant",
+            "description": "Knowledge Assistant can answer document Q&A from the Investor_Report PDF collection. Collection name: Investor_Report. It contains investor reports and interim updates for Northbridge Capital and parent Fairfox Financial Holding, including governance structure, risk policy summaries, portfolio sleeve mappings, dated incident notes (e.g., 2025-06-18 VAR/gamma update), and document metadata citations. Specific identifiers include policy ids (POL-YYYYMMDD-###), breach codes (BR-YYYYMMDD-####), and execution metric definitions (slippage_bps, quote_spread_bps). A referenced file path is /Volumes/sas_demo/saswata_sengupta_agneticportfoliomanager/raw_data/incoming_data/Investor_Report/interim report.pdf.\n\nTopics covered that KA can answer:\n- Risk policy change details and governance context for VAR, gamma, and concentration limits; who approved changes, scopes (sleeve/sector), and rationale.\n- Definitions of execution metrics (slippage_bps, quote_spread_bps, marketable_order_share) and how they\u2019re calculated per firm standard.\n- Portfolio sleeve mappings (Growth-US, Core-EMEA, Tech-APAC) and sector classifications used in reports.\n- Incident notes around the 2025-06-18 policy update, including alignment to breach clusters.\n- Documentation citations including policy ids (POL-...) and breach codes (BR-...), with dates for audit trails.\n\nQuestion types KA can handle:\n- \"What are our VAR/gamma thresholds and the June 18 changes?\" (policy summaries, thresholds, notes)\n- \"Define slippage_bps and quote_spread_bps per the Investor reports.\" (definitions and methodology)\n- \"Which sleeves and sectors are in scope for the policy tightening?\" (scope mapping)\n- \"Provide governance references and document paths for the interim report related to the June event.\" (citations and metadata)\n",
+            "agent_type": "serving-endpoint",
+            "serving_endpoint": {
+              "name": "ka-031f41ef-endpoint"
+            }
+          },
+          {
+            "name": "Genie Data Explorer",
+            "description": "Genie can query the sas_demo.saswata_sengupta_agneticportfoliomanager catalog/schema across silver and gold layers to analyze time-series, aggregations, joins, and KPIs tied to the demo story.\n\nAvailable tables (with exact names and key columns):\n- sas_demo.saswata_sengupta_agneticportfoliomanager.gold_agent_qa_bridge: date, ticker, sleeve, sector, vector_shift_ratio_momentum, vector_shift_ratio_quality, vector_shift_ratio_volatility, vector_shift_ratio_sentiment, breach_count, policy_change_magnitude, turnover_pct, slippage_bps, quote_spread_bps, marketable_order_share, concentration_pct, pnl_pct. Use for unified Q&A and executive metrics.\n- sas_demo.saswata_sengupta_agneticportfoliomanager.gold_breach_contributors: date, sleeve, sector, ticker, turnover_pct, breach_count. Use to identify contributors by ticker/sector during event windows.\n- sas_demo.saswata_sengupta_agneticportfoliomanager.gold_date_spine: date, dow, is_weekday, month. Use to scaffold continuous daily joins.\n- sas_demo.saswata_sengupta_agneticportfoliomanager.gold_execution_costs_daily: date, sleeve, ticker, shares_traded, turnover_pct, avg_slippage_bps, avg_quote_spread_bps, marketable_order_share, avg_top_of_book_depth_shares. Use for execution cost analytics, urgency, and turnover.\n- sas_demo.saswata_sengupta_agneticportfoliomanager.gold_kpi_event_window_stats: avg_turnover_pct_event, avg_slippage_bps_event, total_breaches_event, max_nvda_vol_ratio. Use for single-row KPIs summarizing the event window.\n- sas_demo.saswata_sengupta_agneticportfoliomanager.gold_kpi_latest_pnl_drawdown: sleeve, latest_cumulative_pnl_pct. Use to surface latest drawdowns per sleeve.\n- sas_demo.saswata_sengupta_agneticportfoliomanager.gold_pnl_timeseries: date, sleeve, pnl_pct, cumulative_pnl_pct, sleeve_momentum_proxy. Use for daily and cumulative PnL trends and drawdown tracking.\n- sas_demo.saswata_sengupta_agneticportfoliomanager.gold_portfolio_exposure: date, sleeve, sector, ticker, market_value_usd, avg_concentration_pct, top_positions_share, avg_delta, avg_beta, sleeve_market_value_usd. Use for concentration metrics, sector weights, and exposure analysis.\n- sas_demo.saswata_sengupta_agneticportfoliomanager.gold_risk_breach_alignment: date, sleeve, limit_type, total_breach_count, avg_severity, aligned_change_magnitude, min_time_delta_days, alignment_rate. Use for aligning breach clusters with policy change timing.\n- sas_demo.saswata_sengupta_agneticportfoliomanager.gold_vector_timeseries: date, ticker, momentum_score, earnings_quality_score, valuation_score, volatility_score, news_sentiment_score, baseline_90d_momentum, baseline_90d_quality, baseline_90d_volatility, baseline_90d_sentiment, vector_shift_ratio_momentum, vector_shift_ratio_quality, vector_shift_ratio_volatility, vector_shift_ratio_sentiment, event_window. Use for factor vector shifts (e.g., NVDA volatility ~1.9x baseline on 2025-06-18).\n- sas_demo.saswata_sengupta_agneticportfoliomanager.silver_factset_vectors: ticker, date, momentum_score, earnings_quality_score, valuation_score, volatility_score, news_sentiment_score, baseline_90d_momentum, baseline_90d_quality, baseline_90d_volatility, baseline_90d_sentiment, vector_shift_ratio_momentum, vector_shift_ratio_quality, vector_shift_ratio_volatility, vector_shift_ratio_sentiment.\n- sas_demo.saswata_sengupta_agneticportfoliomanager.silver_orders_execs: order_id, parent_order_id, timestamp, date, ticker, sleeve, side, order_type, venue, quote_spread_bps, top_of_book_depth_shares, fill_qty, avg_fill_price, slippage_bps, urgency_flag.\n- sas_demo.saswata_sengupta_agneticportfoliomanager.silver_positions: position_id, date, ticker, sleeve, sector, quantity, market_value_usd, delta, beta, concentration_flag, sleeve_market_value_usd, concentration_pct, top_positions_flag.\n- sas_demo.saswata_sengupta_agneticportfoliomanager.silver_risk_breaches: breach_id, date, sleeve, limit_type, breach_count, severity_score, week_start.\n- sas_demo.saswata_sengupta_agneticportfoliomanager.silver_risk_policy_changes: policy_id, change_date, change_date_date, scope_sleeve, scope_sector, limit_type, old_threshold, new_threshold, change_magnitude, notes.\n\nKey KPIs and calculations Genie can perform:\n- Vector Shift Ratio per factor: current_value / baseline_90d_* from gold_vector_timeseries or silver_factset_vectors.\n- Breach counts and severity by date/sleeve/limit_type from silver_risk_breaches and gold_risk_breach_alignment; alignment_rate and min_time_delta_days for proximity to policy changes.\n- Turnover_pct, avg_slippage_bps, avg_quote_spread_bps, marketable_order_share from gold_execution_costs_daily; event spike analysis (+35% turnover, +18 bps slippage).\n- Concentration metrics: avg_concentration_pct, top_positions_share, sleeve_market_value_usd from gold_portfolio_exposure; identify semis concentration reduction.\n- PnL: pnl_pct and cumulative_pnl_pct from gold_pnl_timeseries; latest drawdown from gold_kpi_latest_pnl_drawdown (e.g., -2.3% for Growth-US late June).\n- Contributors: breach_count and turnover_pct by ticker/sector from gold_breach_contributors.\n\nRepresentative business questions Genie can answer:\n- Timing and magnitude of NVDA volatility ratio spike and persistence window using gold_vector_timeseries (event_window flag).\n- Execution cost changes (slippage, spreads, urgency) by sleeve/ticker during 2025-06-15..2025-06-22 using gold_execution_costs_daily.\n- Breach clusters and alignment to policy changes using gold_risk_breach_alignment and silver_risk_policy_changes.\n- PnL drawdown trajectory and recovery pace by sleeve using gold_pnl_timeseries and gold_kpi_latest_pnl_drawdown.\n- Sector/ticker contributors to turnover and breaches using gold_breach_contributors and gold_portfolio_exposure.\n\nData exploration capabilities:\n- Time-series filtering across 2025-04-01..2025-10-21; event window 2025-06-15..2025-06-22.\n- Aggregations by sleeve, sector, ticker; joins across silver/gold tables; calculating ratios, deltas, and alignment metrics.\n- Building attribution tables and charts for execution costs, breaches, and PnL.\n",
+            "agent_type": "genie-space",
+            "genie_space": {
+              "id": "01f0af941e6314e1bc2ed7e66496e9ff"
+            }
+          }
+        ],
+        "status": {
+          "endpoint_status": "ONLINE"
+        }
+      }
+    },
+    "examples": [
+      {
+        "question": "Show the alignment_rate and min_time_delta_days between risk breaches and policy changes for Growth-US VAR and gamma limits during 2025-06-18..2025-06-20 (Use gold_risk_breach_alignment and silver_risk_policy_changes)",
+        "guidelines": []
+      },
+      {
+        "question": "Provide the official definition of slippage_bps and quote_spread_bps as per the Investor_Report, and cite the interim report.pdf path",
+        "guidelines": []
+      },
+      {
+        "question": "On which dates did NVDA\u2019s volatility vector shift ratio exceed 1.5x, and what was the peak value around 2025-06-18? (Use gold_vector_timeseries)",
+        "guidelines": []
+      },
+      {
+        "question": "Which tickers and sectors contributed the most to breach_count and turnover_pct in the event window, and by how much? (Use gold_breach_contributors)",
+        "guidelines": []
+      },
+      {
+        "question": "What were the total_breach_count and avg_severity for Growth-US during 2025-06-15..2025-06-22, and which limit_type dominated? (Use gold_risk_breach_alignment)",
+        "guidelines": []
+      },
+      {
+        "question": "Summarize avg_turnover_pct_event, avg_slippage_bps_event, total_breaches_event, and max_nvda_vol_ratio from gold_kpi_event_window_stats, and relate to the governance notes in Investor_Report",
+        "guidelines": []
+      },
+      {
+        "question": "Compare avg_concentration_pct and top_positions_share in Semiconductors before and after 2025-06-18 for Growth-US (Use gold_portfolio_exposure)",
+        "guidelines": []
+      },
+      {
+        "question": "What was the cumulative_pnl_pct drawdown for the Growth-US sleeve in late June, and how did it recover through July? (Use gold_pnl_timeseries and gold_kpi_latest_pnl_drawdown)",
+        "guidelines": []
+      },
+      {
+        "question": "List the policy_id, change_date_date, limit_type, old_threshold, new_threshold, and notes for the 2025-06-18 update affecting Growth-US (Use silver_risk_policy_changes and Investor_Report)",
+        "guidelines": []
+      },
+      {
+        "question": "During 2025-06-15..2025-06-22, how did avg_slippage_bps and avg_quote_spread_bps change for Growth-US vs Core-EMEA, and what was the marketable_order_share? (Use gold_execution_costs_daily)",
+        "guidelines": []
+      }
+    ]
+  },
+  "dashboards": {
+    "portfolio_risk_execution_overview": {
+      "title": "Portfolio Risk and Execution Overview",
+      "id": "01f0b80b78eb11a2b45fdae9c0ed1668"
+    }
+  }
+}

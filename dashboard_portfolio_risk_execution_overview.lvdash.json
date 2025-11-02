@@ -1,0 +1,1190 @@
+{
+  "datasets": [
+    {
+      "name": "ds_aum_counter",
+      "displayName": "Latest AUM Counter",
+      "queryLines": [
+        "SELECT aum_billion FROM sas_demo.saswata_sengupta_agneticportfoliomanager.gold_latest_aum_counter "
+      ],
+      "columns": [
+        {
+          "displayName": "AUM (Billions USD)",
+          "expression": "`aum_billion`"
+        }
+      ]
+    },
+    {
+      "name": "ds_monthly_turnover_counter",
+      "displayName": "Monthly Turnover Counter",
+      "queryLines": [
+        "SELECT DATE_TRUNC('MONTH', date) AS month_start, AVG(turnover_pct) AS monthly_turnover_pct FROM sas_demo.saswata_sengupta_agneticportfoliomanager.gold_execution_costs_daily WHERE DATE_TRUNC('MONTH', date) = DATE_TRUNC('MONTH', add_months(current_date(), -1)) GROUP BY DATE_TRUNC('MONTH', date) "
+      ],
+      "columns": [
+        {
+          "displayName": "Month Start",
+          "expression": "`month_start`"
+        },
+        {
+          "displayName": "Monthly Turnover (%)",
+          "expression": "`monthly_turnover_pct`"
+        }
+      ]
+    },
+    {
+      "name": "ds_trailing_slippage_counter",
+      "displayName": "Trailing 30d Execution Costs",
+      "queryLines": [
+        "SELECT trailing30_avg_slippage_bps, trailing30_avg_quote_spread_bps FROM sas_demo.saswata_sengupta_agneticportfoliomanager.gold_trailing_30d_execution_costs "
+      ],
+      "columns": [
+        {
+          "displayName": "Trailing30 Avg Slippage (bps)",
+          "expression": "`trailing30_avg_slippage_bps`"
+        },
+        {
+          "displayName": "Trailing30 Avg Quote Spread (bps)",
+          "expression": "`trailing30_avg_quote_spread_bps`"
+        }
+      ]
+    },
+    {
+      "name": "ds_open_breaches_7d_counter",
+      "displayName": "Open Breaches 7 Days",
+      "queryLines": [
+        "SELECT breach_count_7d FROM sas_demo.saswata_sengupta_agneticportfoliomanager.gold_open_breaches_7d "
+      ],
+      "columns": [
+        {
+          "displayName": "Breaches (7d)",
+          "expression": "`breach_count_7d`"
+        }
+      ]
+    },
+    {
+      "name": "ds_vector_nvda_timeseries",
+      "displayName": "Volatility Vector Shift (NVDA)",
+      "queryLines": [
+        "SELECT date, ticker, vector_shift_ratio_volatility, event_window FROM sas_demo.saswata_sengupta_agneticportfoliomanager.gold_vector_timeseries WHERE ticker = 'NVDA' ORDER BY date "
+      ],
+      "columns": [
+        {
+          "displayName": "Date",
+          "expression": "`date`"
+        },
+        {
+          "displayName": "Ticker",
+          "expression": "`ticker`"
+        },
+        {
+          "displayName": "Volatility Shift Ratio",
+          "expression": "`vector_shift_ratio_volatility`"
+        },
+        {
+          "displayName": "Event Window Flag",
+          "expression": "`event_window`"
+        }
+      ]
+    },
+    {
+      "name": "ds_weekly_breach_counts",
+      "displayName": "Weekly Breach Counts by Type",
+      "queryLines": [
+        "SELECT week_start, sleeve, limit_type, weekly_breach_count FROM sas_demo.saswata_sengupta_agneticportfoliomanager.gold_weekly_breach_counts_by_type ORDER BY week_start, sleeve, limit_type "
+      ],
+      "columns": [
+        {
+          "displayName": "Week Start",
+          "expression": "`week_start`"
+        },
+        {
+          "displayName": "Sleeve",
+          "expression": "`sleeve`"
+        },
+        {
+          "displayName": "Limit Type",
+          "expression": "`limit_type`"
+        },
+        {
+          "displayName": "Weekly Breach Count",
+          "expression": "`weekly_breach_count`"
+        }
+      ]
+    },
+    {
+      "name": "ds_exec_costs_vs_spreads",
+      "displayName": "Execution Costs vs Spreads Timeseries",
+      "queryLines": [
+        "SELECT date, sleeve, ticker, avg_slippage_bps, avg_quote_spread_bps FROM sas_demo.saswata_sengupta_agneticportfoliomanager.gold_execution_costs_vs_spreads_timeseries ORDER BY date, sleeve, ticker "
+      ],
+      "columns": [
+        {
+          "displayName": "Date",
+          "expression": "`date`"
+        },
+        {
+          "displayName": "Sleeve",
+          "expression": "`sleeve`"
+        },
+        {
+          "displayName": "Ticker",
+          "expression": "`ticker`"
+        },
+        {
+          "displayName": "Avg Slippage (bps)",
+          "expression": "`avg_slippage_bps`"
+        },
+        {
+          "displayName": "Avg Quote Spread (bps)",
+          "expression": "`avg_quote_spread_bps`"
+        }
+      ]
+    },
+    {
+      "name": "ds_policy_change_log",
+      "displayName": "Risk Policy Change Log",
+      "queryLines": [
+        "SELECT change_date_date, scope_sleeve, scope_sector, limit_type, old_threshold, new_threshold, change_magnitude, notes FROM sas_demo.saswata_sengupta_agneticportfoliomanager.silver_risk_policy_changes ORDER BY change_date_date DESC "
+      ],
+      "columns": [
+        {
+          "displayName": "Change Date",
+          "expression": "`change_date_date`"
+        },
+        {
+          "displayName": "Scope Sleeve",
+          "expression": "`scope_sleeve`"
+        },
+        {
+          "displayName": "Scope Sector",
+          "expression": "`scope_sector`"
+        },
+        {
+          "displayName": "Limit Type",
+          "expression": "`limit_type`"
+        },
+        {
+          "displayName": "Old Threshold",
+          "expression": "`old_threshold`"
+        },
+        {
+          "displayName": "New Threshold",
+          "expression": "`new_threshold`"
+        },
+        {
+          "displayName": "Change Magnitude",
+          "expression": "`change_magnitude`"
+        },
+        {
+          "displayName": "Notes",
+          "expression": "`notes`"
+        }
+      ]
+    },
+    {
+      "name": "ds_pnl_timeseries",
+      "displayName": "PnL Timeseries",
+      "queryLines": [
+        "SELECT date, sleeve, cumulative_pnl_pct FROM sas_demo.saswata_sengupta_agneticportfoliomanager.gold_pnl_timeseries ORDER BY date, sleeve "
+      ],
+      "columns": [
+        {
+          "displayName": "Date",
+          "expression": "`date`"
+        },
+        {
+          "displayName": "Sleeve",
+          "expression": "`sleeve`"
+        },
+        {
+          "displayName": "Cumulative PnL (%)",
+          "expression": "`cumulative_pnl_pct`"
+        }
+      ]
+    }
+  ],
+  "pages": [
+    {
+      "name": "portfolio_risk_execution_overview",
+      "displayName": "Portfolio Risk and Execution Overview",
+      "layout": [
+        {
+          "widget": {
+            "name": "header_intro",
+            "multilineTextboxSpec": {
+              "lines": [
+                "# Portfolio Risk and Execution Overview \u2014 Northbridge Capital (Fairfox Financial Holding)\n",
+                "This dashboard unifies external FactSet factor vectors with internal positions, execution costs, and risk governance to trace the June 2025 regime shift for NVDA and its impact on the Growth-US sleeve.\n",
+                "The Investor_Report PDF collection (including interim report.pdf) provides governance context referenced in the root-cause table.\n"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 6,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "kpi_aum_b",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_aum_counter",
+                  "fields": [
+                    {
+                      "name": "sum(aum_billion)",
+                      "expression": "SUM(`aum_billion`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "sum(aum_billion)",
+                  "displayName": "AUM ($B)",
+                  "format": {
+                    "type": "number-currency",
+                    "currencyCode": "USD",
+                    "abbreviation": "compact",
+                    "decimalPlaces": {
+                      "type": "max",
+                      "places": 2
+                    }
+                  }
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "AUM ($B)",
+                "description": "Sum of sleeve market_value_usd over the latest month, scaled to billions.",
+                "showDescription": true
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 2,
+            "width": 2,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "kpi_monthly_turnover_pct",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_monthly_turnover_counter",
+                  "fields": [
+                    {
+                      "name": "avg(monthly_turnover_pct)",
+                      "expression": "AVG(`monthly_turnover_pct`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "avg(monthly_turnover_pct)",
+                  "displayName": "Monthly Turnover (%)",
+                  "format": {
+                    "type": "number-percent",
+                    "decimalPlaces": {
+                      "type": "max",
+                      "places": 1
+                    }
+                  }
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Monthly Turnover (%)",
+                "description": "Average monthly turnover across sleeves (last month).",
+                "showDescription": true
+              }
+            }
+          },
+          "position": {
+            "x": 2,
+            "y": 2,
+            "width": 2,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "kpi_avg_slippage_bps_30d",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_trailing_slippage_counter",
+                  "fields": [
+                    {
+                      "name": "sum(trailing30_avg_slippage_bps)",
+                      "expression": "SUM(`trailing30_avg_slippage_bps`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "sum(trailing30_avg_slippage_bps)",
+                  "displayName": "Avg Slippage (bps)",
+                  "format": {
+                    "type": "number",
+                    "decimalPlaces": {
+                      "type": "max",
+                      "places": 1
+                    }
+                  }
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Avg Slippage (bps)",
+                "description": "Trailing 30-day average slippage.",
+                "showDescription": true
+              }
+            }
+          },
+          "position": {
+            "x": 4,
+            "y": 2,
+            "width": 1,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "kpi_open_breaches_7d",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_open_breaches_7d_counter",
+                  "fields": [
+                    {
+                      "name": "sum(breach_count_7d)",
+                      "expression": "SUM(`breach_count_7d`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "sum(breach_count_7d)",
+                  "displayName": "Open Breaches (7d)",
+                  "format": {
+                    "type": "number",
+                    "decimalPlaces": {
+                      "type": "max",
+                      "places": 0
+                    }
+                  }
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Open Breaches (7d)",
+                "description": "Total breach_count in the last 7 trading days.",
+                "showDescription": true
+              }
+            }
+          },
+          "position": {
+            "x": 5,
+            "y": 2,
+            "width": 1,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "header_factors_exec",
+            "multilineTextboxSpec": {
+              "lines": [
+                "## Factors, Risk Breaches, and Execution Costs\n",
+                "NVDA shows a volatility vector shift near 1.9x on 2025-06-18 while earnings quality dips. Execution costs and spread widen, with increased urgency and turnover.\n"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 5,
+            "width": 6,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "nvda_volatility_vector_shift_line",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_vector_nvda_timeseries",
+                  "fields": [
+                    {
+                      "name": "daily(date)",
+                      "expression": "DATE_TRUNC(\"DAY\", `date`)"
+                    },
+                    {
+                      "name": "avg(vector_shift_ratio_volatility)",
+                      "expression": "AVG(`vector_shift_ratio_volatility`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "daily(date)",
+                  "scale": {
+                    "type": "temporal"
+                  },
+                  "axis": {
+                    "title": "Date"
+                  },
+                  "displayName": "Date"
+                },
+                "y": {
+                  "fieldName": "avg(vector_shift_ratio_volatility)",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "axis": {
+                    "title": "Volatility Shift Ratio (x baseline)"
+                  },
+                  "displayName": "Volatility Shift Ratio"
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Daily Volatility Vector Shift (NVDA)",
+                "description": "Shows the NVDA volatility vector shift ratio (current/baseline), highlighting the ~1.9x spike around 2025-06-18.",
+                "showDescription": true
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 6,
+            "width": 3,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "execution_costs_vs_spreads_lines",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_exec_costs_vs_spreads",
+                  "fields": [
+                    {
+                      "name": "daily(date)",
+                      "expression": "DATE_TRUNC(\"DAY\", `date`)"
+                    },
+                    {
+                      "name": "avg(avg_slippage_bps)",
+                      "expression": "AVG(`avg_slippage_bps`)"
+                    },
+                    {
+                      "name": "avg(avg_quote_spread_bps)",
+                      "expression": "AVG(`avg_quote_spread_bps`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "daily(date)",
+                  "scale": {
+                    "type": "temporal"
+                  },
+                  "axis": {
+                    "title": "Date"
+                  },
+                  "displayName": "Date"
+                },
+                "y": {
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "axis": {
+                    "title": "bps"
+                  },
+                  "fields": [
+                    {
+                      "fieldName": "avg(avg_slippage_bps)",
+                      "displayName": "Avg Slippage (bps)"
+                    },
+                    {
+                      "fieldName": "avg(avg_quote_spread_bps)",
+                      "displayName": "Avg Quote Spread (bps)"
+                    }
+                  ]
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Execution Costs vs Quote Spreads",
+                "description": "Daily averages of slippage and quote spreads; filterable by sleeve/ticker via Global Filters.",
+                "showDescription": true
+              }
+            }
+          },
+          "position": {
+            "x": 3,
+            "y": 6,
+            "width": 3,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "breach_counts_weekly_grouped",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_weekly_breach_counts",
+                  "fields": [
+                    {
+                      "name": "weekly(week_start)",
+                      "expression": "DATE_TRUNC(\"WEEK\", `week_start`)"
+                    },
+                    {
+                      "name": "sum(weekly_breach_count)",
+                      "expression": "SUM(`weekly_breach_count`)"
+                    },
+                    {
+                      "name": "limit_type",
+                      "expression": "`limit_type`"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "weekly(week_start)",
+                  "scale": {
+                    "type": "temporal"
+                  },
+                  "axis": {
+                    "title": "Week Start"
+                  },
+                  "displayName": "Week Start"
+                },
+                "y": {
+                  "fieldName": "sum(weekly_breach_count)",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "axis": {
+                    "title": "Breach Count"
+                  },
+                  "displayName": "Breach Count"
+                },
+                "color": {
+                  "fieldName": "limit_type",
+                  "scale": {
+                    "type": "categorical"
+                  },
+                  "displayName": "Limit Type"
+                }
+              },
+              "mark": {
+                "layout": "group"
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Breach Counts by Sleeve and Type (Weekly)",
+                "description": "Weekly breach counts grouped by limit_type; filter sleeve via Global Filters to focus on Growth-US clustering 2025-06-15..2025-06-22.",
+                "showDescription": true
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 11,
+            "width": 3,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "policy_change_log_table",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_policy_change_log",
+                  "fields": [
+                    {
+                      "name": "change_date_date",
+                      "expression": "`change_date_date`"
+                    },
+                    {
+                      "name": "scope_sleeve",
+                      "expression": "`scope_sleeve`"
+                    },
+                    {
+                      "name": "scope_sector",
+                      "expression": "`scope_sector`"
+                    },
+                    {
+                      "name": "limit_type",
+                      "expression": "`limit_type`"
+                    },
+                    {
+                      "name": "old_threshold",
+                      "expression": "`old_threshold`"
+                    },
+                    {
+                      "name": "new_threshold",
+                      "expression": "`new_threshold`"
+                    },
+                    {
+                      "name": "change_magnitude",
+                      "expression": "`change_magnitude`"
+                    },
+                    {
+                      "name": "notes",
+                      "expression": "`notes`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "change_date_date",
+                    "displayName": "Change Date",
+                    "type": "date",
+                    "displayAs": "date",
+                    "alignContent": "left",
+                    "order": 1,
+                    "dateTimeFormat": "yyyy-MM-dd"
+                  },
+                  {
+                    "fieldName": "scope_sleeve",
+                    "displayName": "Sleeve",
+                    "type": "string",
+                    "displayAs": "string",
+                    "order": 2
+                  },
+                  {
+                    "fieldName": "scope_sector",
+                    "displayName": "Sector",
+                    "type": "string",
+                    "displayAs": "string",
+                    "order": 3
+                  },
+                  {
+                    "fieldName": "limit_type",
+                    "displayName": "Limit Type",
+                    "type": "string",
+                    "displayAs": "string",
+                    "order": 4
+                  },
+                  {
+                    "fieldName": "old_threshold",
+                    "displayName": "Old Threshold",
+                    "type": "float",
+                    "displayAs": "number",
+                    "order": 5,
+                    "numberFormat": "0.00"
+                  },
+                  {
+                    "fieldName": "new_threshold",
+                    "displayName": "New Threshold",
+                    "type": "float",
+                    "displayAs": "number",
+                    "order": 6,
+                    "numberFormat": "0.00"
+                  },
+                  {
+                    "fieldName": "change_magnitude",
+                    "displayName": "Change Magnitude",
+                    "type": "float",
+                    "displayAs": "number",
+                    "order": 7,
+                    "numberFormat": "0.00"
+                  },
+                  {
+                    "fieldName": "notes",
+                    "displayName": "Notes",
+                    "type": "string",
+                    "displayAs": "string",
+                    "order": 8,
+                    "allowHTML": false
+                  }
+                ]
+              },
+              "itemsPerPage": 10,
+              "paginationSize": "small",
+              "frame": {
+                "showTitle": true,
+                "title": "Policy Change Log (Root Cause)",
+                "description": "Highlights the 2025-06-18 tightening aligned to breaches; includes governance notes from the Investor_Report collection.",
+                "showDescription": true
+              }
+            }
+          },
+          "position": {
+            "x": 3,
+            "y": 11,
+            "width": 3,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "cumulative_pnl_by_sleeve_line",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_pnl_timeseries",
+                  "fields": [
+                    {
+                      "name": "daily(date)",
+                      "expression": "DATE_TRUNC(\"DAY\", `date`)"
+                    },
+                    {
+                      "name": "max(cumulative_pnl_pct)",
+                      "expression": "MAX(`cumulative_pnl_pct`)"
+                    },
+                    {
+                      "name": "sleeve",
+                      "expression": "`sleeve`"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "daily(date)",
+                  "scale": {
+                    "type": "temporal"
+                  },
+                  "axis": {
+                    "title": "Date"
+                  },
+                  "displayName": "Date"
+                },
+                "y": {
+                  "fieldName": "max(cumulative_pnl_pct)",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "axis": {
+                    "title": "Cumulative PnL (%)"
+                  },
+                  "displayName": "Cumulative PnL (%)"
+                },
+                "color": {
+                  "fieldName": "sleeve",
+                  "scale": {
+                    "type": "categorical"
+                  },
+                  "displayName": "Sleeve"
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Cumulative PnL by Sleeve",
+                "description": "Daily cumulative PnL% colored by sleeve; shows Growth-US drawdown around late June and subsequent recovery.",
+                "showDescription": true
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 16,
+            "width": 6,
+            "height": 5
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS"
+    },
+    {
+      "name": "global_filters",
+      "displayName": "Global Filters",
+      "layout": [
+        {
+          "widget": {
+            "name": "filter_date_range",
+            "queries": [
+              {
+                "name": "ds_vector_nvda_timeseries_date",
+                "query": {
+                  "datasetName": "ds_vector_nvda_timeseries",
+                  "fields": [
+                    {
+                      "name": "date",
+                      "expression": "`date`"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "ds_exec_costs_vs_spreads_date",
+                "query": {
+                  "datasetName": "ds_exec_costs_vs_spreads",
+                  "fields": [
+                    {
+                      "name": "date",
+                      "expression": "`date`"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "ds_weekly_breach_counts_week_start",
+                "query": {
+                  "datasetName": "ds_weekly_breach_counts",
+                  "fields": [
+                    {
+                      "name": "week_start",
+                      "expression": "`week_start`"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "ds_pnl_timeseries_date",
+                "query": {
+                  "datasetName": "ds_pnl_timeseries",
+                  "fields": [
+                    {
+                      "name": "date",
+                      "expression": "`date`"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "ds_policy_change_log_change_date_date",
+                "query": {
+                  "datasetName": "ds_policy_change_log",
+                  "fields": [
+                    {
+                      "name": "change_date_date",
+                      "expression": "`change_date_date`"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "filter-date-range-picker",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "date",
+                    "displayName": "Date",
+                    "queryName": "ds_vector_nvda_timeseries_date"
+                  },
+                  {
+                    "fieldName": "date",
+                    "displayName": "Date",
+                    "queryName": "ds_exec_costs_vs_spreads_date"
+                  },
+                  {
+                    "fieldName": "week_start",
+                    "displayName": "Week Start",
+                    "queryName": "ds_weekly_breach_counts_week_start"
+                  },
+                  {
+                    "fieldName": "date",
+                    "displayName": "Date",
+                    "queryName": "ds_pnl_timeseries_date"
+                  },
+                  {
+                    "fieldName": "change_date_date",
+                    "displayName": "Policy Change Date",
+                    "queryName": "ds_policy_change_log_change_date_date"
+                  }
+                ]
+              },
+              "frame": {
+                "showTitle": true
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 2,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "filter_sleeve",
+            "queries": [
+              {
+                "name": "ds_exec_costs_vs_spreads_sleeve",
+                "query": {
+                  "datasetName": "ds_exec_costs_vs_spreads",
+                  "fields": [
+                    {
+                      "name": "sleeve",
+                      "expression": "`sleeve`"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "ds_weekly_breach_counts_sleeve",
+                "query": {
+                  "datasetName": "ds_weekly_breach_counts",
+                  "fields": [
+                    {
+                      "name": "sleeve",
+                      "expression": "`sleeve`"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "ds_pnl_timeseries_sleeve",
+                "query": {
+                  "datasetName": "ds_pnl_timeseries",
+                  "fields": [
+                    {
+                      "name": "sleeve",
+                      "expression": "`sleeve`"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "ds_policy_change_log_sleeve",
+                "query": {
+                  "datasetName": "ds_policy_change_log",
+                  "fields": [
+                    {
+                      "name": "scope_sleeve",
+                      "expression": "`scope_sleeve`"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "filter-single-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "sleeve",
+                    "displayName": "Sleeve",
+                    "queryName": "ds_exec_costs_vs_spreads_sleeve"
+                  },
+                  {
+                    "fieldName": "sleeve",
+                    "displayName": "Sleeve",
+                    "queryName": "ds_weekly_breach_counts_sleeve"
+                  },
+                  {
+                    "fieldName": "sleeve",
+                    "displayName": "Sleeve",
+                    "queryName": "ds_pnl_timeseries_sleeve"
+                  },
+                  {
+                    "fieldName": "scope_sleeve",
+                    "displayName": "Sleeve",
+                    "queryName": "ds_policy_change_log_sleeve"
+                  }
+                ]
+              },
+              "frame": {
+                "showTitle": true
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 2,
+            "width": 2,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "filter_ticker",
+            "queries": [
+              {
+                "name": "ds_exec_costs_vs_spreads_ticker",
+                "query": {
+                  "datasetName": "ds_exec_costs_vs_spreads",
+                  "fields": [
+                    {
+                      "name": "ticker",
+                      "expression": "`ticker`"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "ds_vector_nvda_timeseries_ticker",
+                "query": {
+                  "datasetName": "ds_vector_nvda_timeseries",
+                  "fields": [
+                    {
+                      "name": "ticker",
+                      "expression": "`ticker`"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "filter-multi-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "ticker",
+                    "displayName": "Ticker",
+                    "queryName": "ds_exec_costs_vs_spreads_ticker",
+                    "dataType": "STRING"
+                  },
+                  {
+                    "fieldName": "ticker",
+                    "displayName": "Ticker",
+                    "queryName": "ds_vector_nvda_timeseries_ticker",
+                    "dataType": "STRING"
+                  }
+                ]
+              },
+              "frame": {
+                "showTitle": true
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 4,
+            "width": 2,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "filter_sector",
+            "queries": [
+              {
+                "name": "ds_policy_change_log_sector",
+                "query": {
+                  "datasetName": "ds_policy_change_log",
+                  "fields": [
+                    {
+                      "name": "scope_sector",
+                      "expression": "`scope_sector`"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "filter-single-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "scope_sector",
+                    "displayName": "Sector",
+                    "queryName": "ds_policy_change_log_sector"
+                  }
+                ]
+              },
+              "frame": {
+                "showTitle": true
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 6,
+            "width": 2,
+            "height": 2
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_GLOBAL_FILTERS"
+    }
+  ],
+  "uiSettings": {
+    "theme": {
+      "widgetHeaderAlignment": "ALIGNMENT_UNSPECIFIED"
+    }
+  }
+}

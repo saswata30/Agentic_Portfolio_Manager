@@ -67,6 +67,8 @@ The workflow will:
 - Python scripts using Faker library for realistic synthetic data
 - Configurable row counts, schemas, and business logic
 - Automatic Delta table creation in Unity Catalog
+- Upload investor report from the PDF in this repo in case you are not using DAB
+  ![alt text](https://github.com/saswata30/Agentic_Portfolio_Manager/blob/main/Images/Investor%20Report.png?raw=true)
 
 ### SQL Transformations
 - `transformations.sql` - SQL transformations for data processing

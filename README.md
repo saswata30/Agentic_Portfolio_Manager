@@ -1,4 +1,4 @@
-# AgneticPortFolioManager  with databricks AgentBricks
+# AgneticPortFolioManager  with Databricks AgentBricks
 ## Overview
 A Portfolio Manager at Northbridge Capital (a subsidiary of Fairfox Financial Holding) seeks an agentic framework to ingest FactSet factor vectors for any stock ticker (3-year history), enrich them with the firm’s internal positions, orders, and research notes, and expose a Q&A application over unified data. The demo includes an Investor_Report PDF collection and sources metadata referencing: /Volumes/demo_generator/saswata_sengupta_agneticportfoliomanager/raw_data/incoming_data/Investor_Report/interim report.pdf. In June 2025, the framework flags a regime shift for NVDA: momentum and earnings quality vectors decouple, volatility vector rises 1.9x vs baseline, and internal risk limits begin breaching in Growth-US sleeve. Root cause aligns to a 2025-06-18 internal risk policy change that tightened VAR bands after a spike in option gamma. The agent answers natural questions and quantifies impact (PnL drawdown -2.3% in affected sleeve, turnover +35%, slippage +18bps).
 

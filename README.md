@@ -164,8 +164,6 @@ Simply run `databricks bundle deploy` in any workspace where you have the requir
 - Check the generated code in this bundle for implementation details
 - Contact your Databricks workspace administrator for permissions issues
 
-## Generated with AI Demo Generator
-🤖 This bundle was automatically created using the Databricks AI Demo Generator.
 
 **Created**: 2025-10-22 20:50:54
 **User**: saswata.sengupta@databricks.com

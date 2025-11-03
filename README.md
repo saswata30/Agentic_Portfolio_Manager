@@ -118,17 +118,17 @@ The workflow will:
 ### Agent Bricks
 This bundle includes AI agent resources:
 
-- **Genie Space** (ID: `01f0af941e6314e1bc2ed7e66496e9ff`)
+- **Genie Space** 
   - Natural language interface for data exploration
   - Configured with table identifiers from your catalog/schema
   - Sample questions and instructions included
 
-- **Knowledge Assistant** (ID: `031f41ef-6d4a-4183-8f1e-81d50a9815ec`)
+- **Knowledge Assistant** 
   - AI assistant with knowledge sources from Unity Catalog volumes
   - Vector search-powered retrieval augmented generation (RAG)
   - Example questions and guidelines included
 
-- **Multi-Agent Supervisor** (ID: `bd255457-8c45-4f51-8705-d8d8b1c2759d`)
+- **Multi-Agent Supervisor** 
   - Orchestrates multiple specialized agents
   - Routes queries to appropriate sub-agents (Genie, KA, endpoints)
   - Complex multi-step workflows supported
@@ -147,9 +147,10 @@ This bundle includes PDF documents that will be uploaded to the workspace:
 ## Configuration
 
 ### Unity Catalog
-- **Catalog**: `demo_generator`
-- **Schema**: `saswata_sengupta_agneticportfoliomanager`
-- **Workspace Path**: `/Users/saswata.sengupta@databricks.com/AgneticPortFolioManager`
+- **Catalog**: `Your_Catalog`
+- **Schema**: `<Your_name>_agneticportfoliomanager`
+- **Workspace Path**: `<Your_Location>/AgneticPortFolioManager`
+Update as per the configuration
 
 ### Customization
 You can modify the bundle by editing `databricks.yml`:
